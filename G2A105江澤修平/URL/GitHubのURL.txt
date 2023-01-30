@@ -1,0 +1,2 @@
+GitHubのURL
+https://github.com/ezawa982/G2A105-HCSSportsClub.git

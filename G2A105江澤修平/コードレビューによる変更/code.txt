@@ -1,0 +1,93 @@
+G2A105 江澤修平
+using System;
+using System.Data;
+using System.Windows.Forms;
+using System.Data.SQLite;
+
+namespace SportHCS
+{
+    //検索フォーム
+    public partial class Search : Form
+    {
+        public Search()
+        {
+            InitializeComponent();
+        }
+
+        /// <summary>
+        /// まずテキストボックス内に中身入ってるか確認し、
+        /// ラジオボタンで選択されたIDまたは学籍番号で
+        /// テキストボックスの中身と一致するものを検索して
+        /// 表示させる。
+        /// </summary>
+        private void SearchButtonClick(object sender, EventArgs e)
+        {
+            string Textbox = NumberBox.Text;
+            //もしテキストに何も書いてなかったら
+            if (Textbox == "")
+            {
+                MessageBox.Show("正しい値を入力してください。", "エラー",
+                MessageBoxButtons.OK,
+                MessageBoxIcon.Error);
+            }
+            else　//テキストに文字が記入されていたら
+            {
+                if (IDButton.Checked == true) //ID
+                {
+                    using (SQLiteConnection con = new SQLiteConnection("Data Source=table.db"))
+                    {
+                        // DataTableを生成します。
+                        var dataTable = new DataTable();
+                        // SQLの実行
+                        var adapter = new SQLiteDataAdapter("SELECT * FROM t_product WHERE ID = " + NumberBox.Text, con);
+                        adapter.Fill(dataTable);
+                        HcsSportView.DataSource = dataTable;
+                    }
+                }
+                else if (SchoolIDButton.Checked == true) //学籍番号
+                {
+                    using (SQLiteConnection con = new SQLiteConnection("Data Source=table.db"))
+                    {
+                        // DataTableを生成します。
+                        var dataTable = new DataTable();
+                        // SQLの実行
+                        var adapter = new SQLiteDataAdapter("SELECT * FROM t_product WHERE schoolID = " + NumberBox.Text, con);
+                        adapter.Fill(dataTable);
+                        HcsSportView.DataSource = dataTable;
+                    }
+                }
+                
+            }
+        }
+
+        /// <summary>
+        /// 今の画面を閉じて、ホーム画面へ戻る。
+        /// </summary>
+        private void BackButtonClick(object sender, EventArgs e) //押したらホームに戻る
+        {
+            //次画面を非表示
+            this.Visible = false;
+
+            HomeMenu home= new HomeMenu();
+            home.Show();
+        }
+
+        /// <summary>
+        /// 英数字しか記入出来ないように設定。
+        /// </summary>
+        private void NumberBoxKeyPress(object sender, KeyPressEventArgs Number)//英数字のみ記入可能
+        {
+            //バックスペースが推されたときは有効
+            if (Number.KeyChar == '\b')
+            {
+                return;
+            }
+
+            //数値0～9以外を押されたときはイベントキャンセル
+            if (Number.KeyChar < '0' || '9' < Number.KeyChar)
+            {
+                Number.Handled = true;
+            }
+        }
+    }
+}
